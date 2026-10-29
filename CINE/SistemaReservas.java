@@ -7,9 +7,13 @@ public class SistemaReservas {
     public Map<Integer, Object> db = new HashMap<>();
     public int contador = 1;
 
-    // Nombre poco claro, muchos parámetros sueltos, flag sin uso y códigos de error
-    public int hacer(String nombre, String email, boolean socio, Funcion f,
-                     char[] filas, int[] numeros, boolean imprimir, String canal) {
+    // TÉCNICA UTILIZADA: RENAME METHOD
+    // REFACTOR: el método "hacer" se renombró a "crearReserva", porque "hacer" no indicaba qué hace el método.
+
+    // TÉCNICA UTILIZADA: REMOVE PARAMETER
+    // REFACTOR: se eliminó el parámetro "boolean imprimir", que no se usaba en el cuerpo del método.
+    public int crearReserva(String nombre, String email, boolean socio, Funcion f,
+                            char[] filas, int[] numeros, String canal) {
         if (nombre == null || f == null) return -1;
         if (filas.length == 0 || filas.length != numeros.length) return -2;
         try {
@@ -19,7 +23,10 @@ public class SistemaReservas {
                 lista.add("" + filas[i] + numeros[i]);
             }
             Cliente c = new Cliente(nombre, email, socio);
-            Reserva r = new Reserva(contador, c, f, lista);
+            // TÉCNICA UTILIZADA: ADD PARAMETER
+            // REFACTOR: el parámetro "canal" se recibía pero se ignoraba. Se añadió como parámetro al
+            // constructor de Reserva para que la reserva registre por qué canal se hizo.
+            Reserva r = new Reserva(contador, c, f, lista, canal);
             r.precio = calcularPrecio(r, socio ? "socio" : "general");
             db.put(contador, r);
             contador++;
