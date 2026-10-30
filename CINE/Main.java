@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 public class Main {
     public static void main(String[] args) {
         SistemaReservas sistemaReservas = new SistemaReservas();
@@ -6,7 +8,8 @@ public class Main {
         {
             Cliente cliente = new Cliente("Ana", "ana@mail.com", true);
             try {
-                int reserva1 = sistemaReservas.crearReserva(cliente, funcion, new char[] {'F', 'F'}, new int[] {5, 6});
+                int reserva1 = sistemaReservas.crearReserva(cliente, funcion, Arrays.asList(new Asiento('F', 5),
+                new Asiento('F', 6)));
                 System.out.println("Reserva Ana: " + reserva1);
             } catch (IllegalStateException e) {
                 System.out.println(e.getMessage());
@@ -16,7 +19,8 @@ public class Main {
         {
             Cliente cliente = new Cliente("Luis", "luis@mail.com", false);
             try {
-                int reserva2 = sistemaReservas.crearReserva(cliente, funcion, new char[] {'F', 'F'},  new int[] {7, 6});
+                int reserva2 = sistemaReservas.crearReserva(cliente, funcion, Arrays.asList(new Asiento('F', 7),
+                new Asiento('F', 6)));
                 System.out.println("Reserva Luis: " + reserva2);
             } catch(RuntimeException e) {
                 System.out.println(e.getMessage());
