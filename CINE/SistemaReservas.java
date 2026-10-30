@@ -7,9 +7,13 @@ public class SistemaReservas {
     public Map<Integer, Object> db = new HashMap<>();
     public int contador = 1;
 
-    // Nombre poco claro, muchos parámetros sueltos, flag sin uso y códigos de error
-    public int hacer(String nombre, String email, boolean socio, Funcion f,
-                     char[] filas, int[] numeros, boolean imprimir, String canal) {
+    // TÉCNICA UTILIZADA: RENAME METHOD
+    // REFACTOR: el método "hacer" se renombró a "crearReserva", porque "hacer" no indicaba qué hace el método.
+
+    // TÉCNICA UTILIZADA: REMOVE PARAMETER
+    // REFACTOR: se eliminó el parámetro "boolean imprimir", que no se usaba en el cuerpo del método.
+    public int crearReserva(String nombre, String email, boolean socio, Funcion f,
+                            char[] filas, int[] numeros, String canal) {
         if (nombre == null || f == null) return -1;
         if (filas.length == 0 || filas.length != numeros.length) return -2;
         try {
@@ -19,9 +23,15 @@ public class SistemaReservas {
                 lista.add("" + filas[i] + numeros[i]);
             }
             Cliente c = new Cliente(nombre, email, socio);
-            Reserva r = new Reserva(contador, c, f, lista);
-            // Técnica utilizada: Replace parameter with explicit method.
+
+            // TÉCNICA UTILIZADA: ADD PARAMETER
+            // REFACTOR: el parámetro "canal" se recibía pero se ignoraba. Se añadió como parámetro al
+            // constructor de Reserva para que la reserva registre por qué canal se hizo.
+            Reserva r = new Reserva(contador, c, f, lista, canal);
+            // TÉCNICA UTILIZADA: Replace parameter with explicit method.
+            // REFACTOR: El terceario ahora apunta a dos funciones dedicadas en lugar de una misma función con otro condiconal dentro
             r.precio = socio ? calcularPrecioSocio(r) : calcularPrecioGeneral(r);
+
             db.put(contador, r);
             contador++;
             return r.id;
@@ -33,7 +43,7 @@ public class SistemaReservas {
     // Tipo de tarifa como String y if/else
     /*
         Técnica utilizada: Replace parameter with explicit method.
-        El parametro de tipo de socio que se usaba en un if condicional, ahora se reemplazo con funciones dedicadas.
+        REFACTOR: El parametro de tipo de socio que se usaba en un if condicional, ahora se reemplazo con funciones dedicadas.
         Calcular precio se dividio en 2 funciones, una para cada tipo de cliente.
     */
     public double calcularPrecioGeneral(Reserva reserva){
@@ -47,7 +57,7 @@ public class SistemaReservas {
 
     /*
         Técnica utilizada: Parameterize method
-        Se agrego un parametro extra que permite eliminar misma función con dato diferente.
+        REFACTOR: Se agrego un parametro extra que permite eliminar misma función con dato diferente.
         Ahora el parametro es el porcentaje de descuento.
     */
     public double descuento(double precio, double porcentaje) {
