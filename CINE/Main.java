@@ -6,7 +6,7 @@ public class Main {
         {
             Cliente cliente = new Cliente("Ana", "ana@mail.com", true);
             try {
-                int reserva1 = sistemaReservas.reservarAsientos(cliente, funcion, new char[] {'F', 'F'}, new int[] {5, 6});
+                int reserva1 = sistemaReservas.crearReserva(cliente, funcion, new char[] {'F', 'F'}, new int[] {5, 6});
                 System.out.println("Reserva Ana: " + reserva1);
             } catch (IllegalStateException e) {
                 System.out.println(e.getMessage());
@@ -16,7 +16,7 @@ public class Main {
         {
             Cliente cliente = new Cliente("Luis", "luis@mail.com", false);
             try {
-                int reserva2 = sistemaReservas.reservarAsientos(cliente, funcion, new char[] {'F', 'F'},  new int[] {7, 6});
+                int reserva2 = sistemaReservas.crearReserva(cliente, funcion, new char[] {'F', 'F'},  new int[] {7, 6});
                 System.out.println("Reserva Luis: " + reserva2);
             } catch(RuntimeException e) {
                 System.out.println(e.getMessage());
@@ -25,7 +25,7 @@ public class Main {
 
         System.out.println("Ocupados: " + funcion.getListaAsientosOcupados());
 
-        Reserva ana = (Reserva) sistemaReservas.buscar(1);
+        Reserva ana = sistemaReservas.buscar(1);
         System.out.println("Precio Ana (socio): " + ana.precio);
 
         System.out.print("Cancelar 1: ");

@@ -4,48 +4,23 @@ import java.util.List;
 import java.util.Map;
 
 public class SistemaReservas {
-    public Map<Integer, Reserva> dbReservas = new HashMap<>();
+    private final Map<Integer, Reserva> dbReservas = new HashMap<>();
     public int contadorReservas = 1;
 
-    public int reservarAsientos(Cliente cliente, Funcion funcion, char[] filas, int[] numeros) {
-        if (filas.length == 0 || filas.length != numeros.length) {
-            throw new RuntimeException("El numero de filas o");
-        }
-
-        for(int i = 0; i < filas.length; i++) {
-            if( ! funcion.disponibilidadAsiento(filas[i], numeros[i]) ) {
-                throw new RuntimeException("No se han encontrado los asientos disponibles");
-            }
     // TÉCNICA UTILIZADA: RENAME METHOD
     // REFACTOR: el método "hacer" se renombró a "crearReserva", porque "hacer" no indicaba qué hace el método.
 
     // TÉCNICA UTILIZADA: REMOVE PARAMETER
     // REFACTOR: se eliminó el parámetro "boolean imprimir", que no se usaba en el cuerpo del método.
-    public int crearReserva(String nombre, String email, boolean socio, Funcion f,
-                            char[] filas, int[] numeros, String canal) {
-        if (nombre == null || f == null) return -1;
-        if (filas.length == 0 || filas.length != numeros.length) return -2;
-        try {
-            List<String> lista = new ArrayList<>();
-            for (int i = 0; i < filas.length; i++) {
-                f.ocupar(filas[i], numeros[i]);   // si falla a mitad, los anteriores ya quedaron ocupados
-                lista.add("" + filas[i] + numeros[i]);
+    public int crearReserva(Cliente cliente, Funcion funcion, char[] filas, int[] numeros) {
+        if (filas.length == 0 || filas.length != numeros.length) {
+            throw new RuntimeException("El numero de filas o");
+        }
+
+        for(int i = 0; i < filas.length; i++) {
+            if (!funcion.disponibilidadAsiento(filas[i], numeros[i])) {
+                throw new RuntimeException("No se han encontrado los asientos disponibles");
             }
-            Cliente c = new Cliente(nombre, email, socio);
-
-            // TÉCNICA UTILIZADA: ADD PARAMETER
-            // REFACTOR: el parámetro "canal" se recibía pero se ignoraba. Se añadió como parámetro al
-            // constructor de Reserva para que la reserva registre por qué canal se hizo.
-            Reserva r = new Reserva(contador, c, f, lista, canal);
-            // TÉCNICA UTILIZADA: Replace parameter with explicit method.
-            // REFACTOR: El terceario ahora apunta a dos funciones dedicadas en lugar de una misma función con otro condiconal dentro
-            r.precio = socio ? calcularPrecioSocio(r) : calcularPrecioGeneral(r);
-
-            db.put(contador, r);
-            contador++;
-            return r.id;
-        } catch (IllegalStateException e) {
-            return -3;
         }
 
         List<String> lista = new ArrayList<>();
@@ -56,7 +31,13 @@ public class SistemaReservas {
         }
 
         Reserva reserva = new Reserva(contadorReservas, cliente, funcion, lista, false);
-        reserva.precio = calcularPrecio(reserva, cliente.socio ? "socio" : "general");
+
+        // TÉCNICA UTILIZADA: ADD PARAMETER
+        // REFACTOR: el parámetro "canal" se recibía pero se ignoraba. Se añadió como parámetro al
+        // constructor de Reserva para que la reserva registre por qué canal se hizo.
+        // TÉCNICA UTILIZADA: Replace parameter with explicit method.
+        // REFACTOR: El terceario ahora apunta a dos funciones dedicadas en lugar de una misma función con otro condiconal dentro
+        reserva.precio = cliente.socio ? calcularPrecioSocio(reserva) : calcularPrecioGeneral(reserva);
         dbReservas.put(contadorReservas, reserva);
         contadorReservas++;
 
@@ -106,7 +87,7 @@ public class SistemaReservas {
         }
     }
 
-    public Object buscar(int id) {
+    public Reserva buscar(int id) {
         return dbReservas.get(id);
     }
 }
