@@ -1,0 +1,106 @@
+classDiagram
+    direction TB
+
+    class Main {
+        -int SALA_FUNCION$
+        -double PRECIO_FUNCION$
+        -int ID_RESERVA_ANA$
+        -int ID_RESERVA_INEXISTENTE$
+        -String CODIGO_EXITO$
+        -String CODIGO_ERROR$
+        +main(String[] args)$ void
+    }
+
+    class SistemaReservas {
+        -int CONTADOR_INICIAL$
+        -double DESCUENTO_SOCIO$
+        -int INDICE_FILA_ASIENTO$
+        -int INDICE_NUMERO_ASIENTO$
+        -Map~Integer, Reserva~ dbReservas
+        -int contadorReservas
+        +getContadorReservas() int
+        +crearReserva(Cliente cliente, Funcion funcion, List~Asiento~ asientos) int
+        +calcularPrecioGeneral(Reserva reserva) double
+        +calcularPrecioSocio(Reserva reserva) double
+        +descuento(double precio, double porcentaje) double
+        +cancelar(int idReserva) void
+        +buscar(int idReserva) Reserva
+    }
+
+    class Asiento {
+        -char fila
+        -int numero
+        +Asiento(char fila, int numero)
+        +getFila() char
+        +getNumero() int
+        +codigo() String
+    }
+
+    class Reserva {
+        -int id
+        -Cliente cliente
+        -Funcion funcion
+        -List~String~ asientos
+        -double precio
+        -boolean cancelada
+        +Reserva(int id, Cliente cliente, Funcion funcion, List~String~ asientos, boolean cancelada)
+        +getId() int
+        +setId(int id) void
+        +getCliente() Cliente
+        +setCliente(Cliente cliente) void
+        +getFuncion() Funcion
+        +setFuncion(Funcion funcion) void
+        +getAsientos() List~String~
+        +setAsientos(List~String~ asientos) void
+        +getPrecio() double
+        +setPrecio(double precio) void
+        +isCancelada() boolean
+        +getCancelada() boolean
+    }
+
+    class Cliente {
+        -String nombre
+        -String email
+        -boolean socio
+        +Cliente(String nombre, String email, boolean socio)
+        +getNombre() String
+        +setNombre(String nombre) void
+        +getEmail() String
+        +setEmail(String email) void
+        +isSocio() boolean
+        +getSocio() boolean
+        +setSocio(boolean socio) void
+    }
+
+    class Funcion {
+        -String titulo
+        -int sala
+        -String hora
+        -double precio
+        -List~String~ ocupados
+        +Funcion(String titulo, int sala, String hora, double precio)
+        +getTitulo() String
+        +setTitulo(String titulo) void
+        +getSala() int
+        +setSala(int sala) void
+        +getHora() String
+        +setHora(String hora) void
+        +getPrecio() double
+        +disponibilidadAsiento(char fila, int numero) boolean
+        +ocuparAsiento(char fila, int numero) void
+        +desocuparAsiento(char fila, int numero) void
+        +getListaAsientosOcupados() List~String~
+    }
+
+    Main ..> SistemaReservas : usa
+    Main ..> Funcion : crea
+    Main ..> Cliente : crea
+    Main ..> Asiento : crea
+
+    SistemaReservas o-- Reserva : dbReservas (1..*)
+    SistemaReservas ..> Asiento : usa
+    SistemaReservas ..> Cliente : usa
+    SistemaReservas ..> Funcion : verifica y ocupa/desocupa asientos
+
+    Reserva --> Cliente : cliente (1)
+    Reserva --> Funcion : funcion (1)
