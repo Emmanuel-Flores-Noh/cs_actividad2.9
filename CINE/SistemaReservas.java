@@ -52,12 +52,17 @@ public class SistemaReservas {
         return reserva.id;
     }
 
+    
+
     // Tipo de tarifa como String y if/else
     /*
         Técnica utilizada: Replace parameter with explicit method.
         REFACTOR: El parametro de tipo de socio que se usaba en un if condicional, ahora se reemplazo con funciones dedicadas.
         Calcular precio se dividio en 2 funciones, una para cada tipo de cliente.
     */
+
+    // TÉCNICA UTILIZADA: REPLACE PARAMETER WITH METHOD 
+    // REFACTOR: Se eliminó el parámetro del precio y se obtiene directamente de reserva.funcion.precio.
     public double calcularPrecioGeneral(Reserva reserva){
         return reserva.funcion.precio * reserva.asientos.size();
     }

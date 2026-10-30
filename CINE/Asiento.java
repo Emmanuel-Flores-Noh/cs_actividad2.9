@@ -1,4 +1,6 @@
 public class Asiento {
+    // TÉCNICA UTILIZADA: INTRODUCE PARAMETER OBJECT
+    // REFACTOR: Clase Asiento creada para reemplazar los parámetros en crearReserva
     public final char fila;
     public final int numero;
 
