@@ -4,8 +4,17 @@ import java.util.List;
 import java.util.Map;
 
 public class SistemaReservas {
+    private static final int CONTADOR_INICIAL = 1;
+    private static final double DESCUENTO_SOCIO = 0.15;
+    private static final int INDICE_FILA_ASIENTO = 0;
+    private static final int INDICE_NUMERO_ASIENTO = 1;
+
     private final Map<Integer, Reserva> dbReservas = new HashMap<>();
-    public int contadorReservas = 1;
+    private int contadorReservas = CONTADOR_INICIAL;
+
+    public int getContadorReservas() {
+        return contadorReservas;
+    }
 
     // TÉCNICA UTILIZADA: RENAME METHOD
     // REFACTOR: el método "hacer" se renombró a "crearReserva", porque "hacer" no indicaba qué hace el método.
@@ -26,30 +35,30 @@ public class SistemaReservas {
         }
 
         for (Asiento asiento : asientos) {
-            if (!funcion.disponibilidadAsiento(asiento.fila, asiento.numero)) {
+            if (!funcion.disponibilidadAsiento(asiento.getFila(), asiento.getNumero())) {
                 throw new RuntimeException("No se han encontrado los asientos disponibles");
             }
         }
 
-        List<String> lista = new ArrayList<>();
+        List<String> codigosAsientos = new ArrayList<>();
 
         for (Asiento asiento : asientos) {
-            funcion.ocuparAsiento(asiento.fila, asiento.numero);
-            lista.add("" + asiento.fila + asiento.numero);
+            funcion.ocuparAsiento(asiento.getFila(), asiento.getNumero());
+            codigosAsientos.add(asiento.codigo());
         }
 
-        Reserva reserva = new Reserva(contadorReservas, cliente, funcion, lista, false);
+        Reserva reserva = new Reserva(contadorReservas, cliente, funcion, codigosAsientos, false);
 
         // TÉCNICA UTILIZADA: ADD PARAMETER
         // REFACTOR: el parámetro "canal" se recibía pero se ignoraba. Se añadió como parámetro al
         // constructor de Reserva para que la reserva registre por qué canal se hizo.
         // TÉCNICA UTILIZADA: Replace parameter with explicit method.
         // REFACTOR: El terceario ahora apunta a dos funciones dedicadas en lugar de una misma función con otro condiconal dentro
-        reserva.precio = cliente.socio ? calcularPrecioSocio(reserva) : calcularPrecioGeneral(reserva);
+        reserva.setPrecio(cliente.isSocio() ? calcularPrecioSocio(reserva) : calcularPrecioGeneral(reserva));
         dbReservas.put(contadorReservas, reserva);
         contadorReservas++;
 
-        return reserva.id;
+        return reserva.getId();
     }
 
     
@@ -64,11 +73,10 @@ public class SistemaReservas {
     // TÉCNICA UTILIZADA: REPLACE PARAMETER WITH METHOD 
     // REFACTOR: Se eliminó el parámetro del precio y se obtiene directamente de reserva.funcion.precio.
     public double calcularPrecioGeneral(Reserva reserva){
-        return reserva.funcion.precio * reserva.asientos.size();
+        return reserva.getFuncion().getPrecio() * reserva.getAsientos().size();
     }
     public double calcularPrecioSocio(Reserva reserva){
-        double DESCUENTO_SOCIO = 0.15;
-        double subtotal = reserva.funcion.precio * reserva.asientos.size();
+        double subtotal = reserva.getFuncion().getPrecio() * reserva.getAsientos().size();
         return descuento(subtotal, DESCUENTO_SOCIO);
     }
 
@@ -83,24 +91,24 @@ public class SistemaReservas {
 
     
     // Downcast repetido en cada llamada
-    public void cancelar(int id) throws IllegalStateException {
-        Reserva reserva = dbReservas.get(id);
+    public void cancelar(int idReserva) throws IllegalStateException {
+        Reserva reserva = dbReservas.get(idReserva);
         if (reserva == null) {
-            throw new IllegalStateException("No existe la reserva con id: " + id);
+            throw new IllegalStateException("No existe la reserva con id: " + idReserva);
         }
-        if (reserva.cancelada) {
-            throw new IllegalStateException("La reserva con id " + id + " ya ha sido cancelada");
+        if (reserva.isCancelada()) {
+            throw new IllegalStateException("La reserva con id " + idReserva + " ya ha sido cancelada");
         }
 
-        for (String asiento : reserva.asientos) {
-            char fila = asiento.charAt(0);
-            int numero = Integer.parseInt(asiento.substring(1));
+        for (String codigoAsiento : reserva.getAsientos()) {
+            char fila = codigoAsiento.charAt(INDICE_FILA_ASIENTO);
+            int numero = Integer.parseInt(codigoAsiento.substring(INDICE_NUMERO_ASIENTO));
 
-            reserva.funcion.desocuparAsiento(fila, numero);
+            reserva.getFuncion().desocuparAsiento(fila, numero);
         }
     }
 
-    public Reserva buscar(int id) {
-        return dbReservas.get(id);
+    public Reserva buscar(int idReserva) {
+        return dbReservas.get(idReserva);
     }
 }

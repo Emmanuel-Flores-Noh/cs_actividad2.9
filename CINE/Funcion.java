@@ -2,10 +2,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Funcion {
-    public String titulo;
-    public int sala;
-    public String hora;
-    public double precio;
+    private String titulo;
+    private int sala;
+    private String hora;
+    private double precio;
     private final List<String> ocupados = new ArrayList<>();
 
     public Funcion(String titulo, int sala, String hora, double precio) {
@@ -13,6 +13,34 @@ public class Funcion {
         this.sala = sala;
         this.hora = hora;
         this.precio = precio;
+    }
+
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
+    }
+
+    public int getSala() {
+        return sala;
+    }
+
+    public void setSala(int sala) {
+        this.sala = sala;
+    }
+
+    public String getHora() {
+        return hora;
+    }
+
+    public void setHora(String hora) {
+        this.hora = hora;
+    }
+
+    public double getPrecio() {
+        return precio;
     }
 
     public boolean disponibilidadAsiento(char fila, int numero) {

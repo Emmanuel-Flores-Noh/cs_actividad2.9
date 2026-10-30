@@ -1,51 +1,62 @@
 import java.util.Arrays;
 
 public class Main {
+    private static final int SALA_FUNCION = 3;
+    private static final double PRECIO_FUNCION = 12.0;
+    private static final int ID_RESERVA_ANA = 1;
+    private static final int ID_RESERVA_INEXISTENTE = 99;
+    private static final String CODIGO_EXITO = "0";
+    private static final String CODIGO_ERROR = "-1";
+
     public static void main(String[] args) {
         SistemaReservas sistemaReservas = new SistemaReservas();
-        Funcion funcion = new Funcion("Interestelar", 3, "20:30", 12.0);
+        Funcion funcionInterestelar = new Funcion("Interestelar", SALA_FUNCION, "20:30", PRECIO_FUNCION);
 
         {
-            Cliente cliente = new Cliente("Ana", "ana@mail.com", true);
+            Cliente clienteAna = new Cliente("Ana", "ana@mail.com", true);
             try {
-                int reserva1 = sistemaReservas.crearReserva(cliente, funcion, Arrays.asList(new Asiento('F', 5),
-                new Asiento('F', 6)));
-                System.out.println("Reserva Ana: " + reserva1);
-            } catch (IllegalStateException e) {
-                System.out.println(e.getMessage());
+                int idReservaAna = sistemaReservas.crearReserva(clienteAna, funcionInterestelar, Arrays.asList(
+                    new Asiento('F', 5),
+                    new Asiento('F', 6)
+                ));
+                System.out.println("Reserva Ana: " + idReservaAna);
+            } catch (IllegalStateException excepcion) {
+                System.out.println(excepcion.getMessage());
             }
         }
 
         {
-            Cliente cliente = new Cliente("Luis", "luis@mail.com", false);
+            Cliente clienteLuis = new Cliente("Luis", "luis@mail.com", false);
             try {
-                int reserva2 = sistemaReservas.crearReserva(cliente, funcion, Arrays.asList(new Asiento('F', 7),
-                new Asiento('F', 6)));
-                System.out.println("Reserva Luis: " + reserva2);
-            } catch(RuntimeException e) {
-                System.out.println(e.getMessage());
+                int idReservaLuis = sistemaReservas.crearReserva(clienteLuis, funcionInterestelar, Arrays.asList(
+                    new Asiento('F', 7),
+                    new Asiento('F', 6)
+                ));
+                System.out.println("Reserva Luis: " + idReservaLuis);
+            } catch (RuntimeException excepcion) {
+                System.out.println(excepcion.getMessage());
             }
         }
 
-        System.out.println("Ocupados: " + funcion.getListaAsientosOcupados());
+        System.out.println("Ocupados: " + funcionInterestelar.getListaAsientosOcupados());
 
-        Reserva ana = sistemaReservas.buscar(1);
-        System.out.println("Precio Ana (socio): " + ana.precio);
+        Reserva reservaAna = sistemaReservas.buscar(ID_RESERVA_ANA);
+        System.out.println("Precio Ana (socio): " + reservaAna.getPrecio());
 
         System.out.print("Cancelar 1: ");
         try {
-            sistemaReservas.cancelar(1);
-            System.out.println("0");
-        } catch (IllegalStateException e) {
-            System.out.println("-1");
+            sistemaReservas.cancelar(ID_RESERVA_ANA);
+            System.out.println(CODIGO_EXITO);
+        } catch (IllegalStateException excepcion) {
+            System.out.println(CODIGO_ERROR);
         }
 
         System.out.print("Cancelar 99: ");
         try {
-            sistemaReservas.cancelar(99);
-            System.out.println("0");
-        } catch (IllegalStateException e) {
-            System.out.println("-1");
+            sistemaReservas.cancelar(ID_RESERVA_INEXISTENTE);
+            System.out.println(CODIGO_EXITO);
+        } catch (IllegalStateException excepcion) {
+            System.out.println(CODIGO_ERROR);
         }
     }
 }
