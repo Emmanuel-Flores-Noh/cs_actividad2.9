@@ -20,7 +20,8 @@ public class SistemaReservas {
             }
             Cliente c = new Cliente(nombre, email, socio);
             Reserva r = new Reserva(contador, c, f, lista);
-            r.precio = calcularPrecio(r, socio ? "socio" : "general");
+            // Técnica utilizada: Replace parameter with explicit method.
+            r.precio = socio ? calcularPrecioSocio(r) : calcularPrecioGeneral(r);
             db.put(contador, r);
             contador++;
             return r.id;
@@ -30,24 +31,30 @@ public class SistemaReservas {
     }
 
     // Tipo de tarifa como String y if/else
-    public double calcularPrecio(Reserva r, String tipo) {
-        double base = r.funcion.precio * r.asientos.size();
-        if (tipo.equals("general")) {
-            return base;
-        } else if (tipo.equals("socio")) {
-            return descuentoDel15(base);
-        }
-        return base;
+    /*
+        Técnica utilizada: Replace parameter with explicit method.
+        El parametro de tipo de socio que se usaba en un if condicional, ahora se reemplazo con funciones dedicadas.
+        Calcular precio se dividio en 2 funciones, una para cada tipo de cliente.
+    */
+    public double calcularPrecioGeneral(Reserva reserva){
+        return reserva.funcion.precio * reserva.asientos.size();
+    }
+    public double calcularPrecioSocio(Reserva reserva){
+        double DESCUENTO_SOCIO = 0.15;
+        double subtotal = reserva.funcion.precio * reserva.asientos.size();
+        return descuento(subtotal, DESCUENTO_SOCIO);
     }
 
-    public double descuentoDel15(double p) {
-        return p - p * 0.15;
+    /*
+        Técnica utilizada: Parameterize method
+        Se agrego un parametro extra que permite eliminar misma función con dato diferente.
+        Ahora el parametro es el porcentaje de descuento.
+    */
+    public double descuento(double precio, double porcentaje) {
+        return precio - precio * porcentaje;
     }
 
-    public double descuentoDel25(double p) {   // duplicado, sin uso
-        return p - p * 0.25;
-    }
-
+    
     // Downcast repetido en cada llamada
     public int cancelar(int id) {
         Reserva r = (Reserva) db.get(id);
