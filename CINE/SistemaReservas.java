@@ -12,22 +12,30 @@ public class SistemaReservas {
 
     // TÉCNICA UTILIZADA: REMOVE PARAMETER
     // REFACTOR: se eliminó el parámetro "boolean imprimir", que no se usaba en el cuerpo del método.
-    public int crearReserva(Cliente cliente, Funcion funcion, char[] filas, int[] numeros) {
-        if (filas.length == 0 || filas.length != numeros.length) {
-            throw new RuntimeException("El numero de filas o");
+
+    // TÉCNICA UTILIZADA: PRESERVE WHOLE OBJECT
+    // REFACTOR: Se reemplazaron los parámetros nombre, email y socio por un objeto Cliente,
+    // que agrupa esos datos y se pasa completo al método.
+
+    // TÉCNICA UTILIZADA: INTRODUCE PARAMETER OBJECT
+    // REFACTOR: Se reemplazaron los arrays paralelos de filas y números por una lista de objetos Asiento,
+    // que agrupa ambos datos y evita depender de que coincidan por posición.
+    public int crearReserva(Cliente cliente, Funcion funcion, List<Asiento> asientos) {
+        if (asientos.isEmpty()) {
+            throw new RuntimeException("La reserva debe incluir al menos un asiento");
         }
 
-        for(int i = 0; i < filas.length; i++) {
-            if (!funcion.disponibilidadAsiento(filas[i], numeros[i])) {
+        for (Asiento asiento : asientos) {
+            if (!funcion.disponibilidadAsiento(asiento.fila, asiento.numero)) {
                 throw new RuntimeException("No se han encontrado los asientos disponibles");
             }
         }
 
         List<String> lista = new ArrayList<>();
 
-        for (int i = 0; i < filas.length; i++) {
-            funcion.ocuparAsiento(filas[i], numeros[i]);
-            lista.add("" + filas[i] + numeros[i]);
+        for (Asiento asiento : asientos) {
+            funcion.ocuparAsiento(asiento.fila, asiento.numero);
+            lista.add("" + asiento.fila + asiento.numero);
         }
 
         Reserva reserva = new Reserva(contadorReservas, cliente, funcion, lista, false);
